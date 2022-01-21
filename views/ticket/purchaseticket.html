@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{%load crispy_forms_tags%}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="{% url 'index' %}">Crossline</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler0" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarToggler0">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'purchase-ticket' %}">Purchase Ticket</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'generate-ticket-QR'%}">Ticket QR</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'ticket-history'%}">Ticket History</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'logout'%}">Logout</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div class="container">
+    <div class="row" id="user_form">
+        <div class="col-md-12" >
+            <div class="row justify-content-center">
+              <div class="col-md-6">
+                <form id="purchase_form" method="POST" class="form">
+                  {% csrf_token %}
+                  <table class="table">
+                      {{form}}
+                      <tr class="text-center"><td colspan="2"><button id="id_submit_purchase_ticket" type="submit" class="btn btn-primary">Submit</button></td></tr>
+                  </table>
+              </form>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table text-center" id="available_buses">
+          <caption id="caption" class="center" style="caption-side: top; color: red; padding: 2px 4px;">{{err_msg}}</caption>
+          <tr>
+            <th>Type</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Departure Time</th>
+            <th>Estimated Arrival Time</th>
+            <th>Seat Amount</th>
+            <th>Price</th>
+            <th>Purchase</th>
+          </tr>
+          <!-- for loop with data from available_buses-->
+          {% if available_buses %}
+            {% for bus in available_buses %}
+              {% for b in bus%}
+                <tr id={{b.id}}>
+                    <td name="run_type">{{b.run_type}}</td>
+                    <td name="dp_name">{{b.dp_name}}</td>
+                    <td name="ds_name">{{b.ds_name}}</td>
+                    <td name="departure_time">{{b.departure_time}}</td>
+                    <td name="arrival_time">{{b.arrival_time}}</td>
+                    <td id={{b.user_to_from}}>{{b.number_of_seats}}</td>
+                    <td>${{b.price}}</td>
+                    <td><button type="button" class="btn btn-primary purchaseBtn">Purchase</button></td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+            {% else %}
+            <tr><td colspan="8">No Buses Available</td></tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,144 @@
+<div class="row mt-5">
+    <div class="addLocation col-sm-5 border-right">
+        <form id="addLocation"  method="POST">
+            <h2>Add Location</h2>
+            
+            <div class="field" style="width: 250px;">
+                <label for="location_name">Add a location name:</label>
+                <input id="location_name" name="location_name" type="text" placeholder="add a location name" class="form-control">
+                <input type="hidden" id="longitude" name="longitude">
+                <input type="hidden" id="latitude" name="latitude">
+            </div>
+            <div id="map" class="m-3"></div>
+            <button type="submit" class="btn btn-success">Add Location</button>
+        </form>
+    </div>
+    <div class="viewLocations col-sm-4">
+        <h2>Locations</h2>
+        <ul id="location-list" class="list-group">
+            {% for location in locations %}                
+                <li data-lng="{{location.longitude}}" data-lat="{{location.latitude}}" class="list-group-item">{{location.location_name}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<script>
+// Create the script tag, set the appropriate attributes
+var script = document.createElement('script');
+script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCJP6eIlD1MmMoiwN2vzgAT30l7qjbyo18&callback=initMap';
+script.async = true;
+
+//get or set the name field in the create location form
+function title(value){
+    if(typeof value != "undefined"){
+        document.getElementById('location_name').value = value
+    }
+    else
+        return document.getElementById('location_name').value
+}
+//add location li element to the DOM given a location object
+function addLocation(location){
+    locationItem = document.createElement('li')
+    locationItem.classList.add('list-group-item')
+    locationItem.setAttribute('data-lng', location.longitude )
+    locationItem.setAttribute('data-lat', location.latitude)
+    locationItem.innerText = location.name
+    document.getElementById('location-list').appendChild(locationItem)
+}
+
+
+///create a location using API /busrun/location/create POST
+// handle form submission
+document.getElementById('addLocation').addEventListener('submit', function(e){
+    e.preventDefault()
+    let name = title().length==0?'no title':title()
+    let longitude = document.getElementById('longitude')
+    let latitude = document.getElementById('latitude')
+    var $this = this
+    axios.post("{%url 'create-location'%}", {
+        name,
+        longitude:longitude.value,
+        latitude:latitude.value
+    }, {
+        headers:{
+            'Content-Type':'application/json',
+            'X-CSRFToken':"{{csrf_token}}"
+        }
+    })
+    .then(response => response.data)
+    .then(data =>{
+        if(data.status){
+            Message({type:"ok", message:data.message})
+            title("")
+            longitude.value = ""
+            latitude.value = ""
+            addLocation(data.data)
+            
+            if(mark != null){
+                mark.setMap(null)
+                mark = null
+            }
+        } 
+        else Message({type:"error", message:data.message})
+    })
+    .catch(error=>{
+        Message({type:"error", message:error.message})
+    })
+})
+
+// google maps API
+window.initMap = function() {
+// JS API is loaded and available
+    let map;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 17.255711284355478, lng:  -88.79348526331273 },
+            zoom: 8,
+        });
+        
+        var mark=null;
+        
+        google.maps.event.addListener(map, "click", function (event) {
+            var latitude = event.latLng.lat();
+            var longitude = event.latLng.lng();
+            
+            console.log( latitude + ', ' + longitude );
+            document.getElementById('longitude').value = longitude
+            document.getElementById('latitude').value = latitude
+            
+            if(mark != null){ //reset marker
+                mark.setMap(null)
+                mark = null
+            }                
+            mark = new google.maps.Marker({
+                position:{lat:latitude, lng:longitude},
+                map,
+                title:title().length == 0? 'no title': title() 
+            })
+        });
+        
+    }
+    initMap()
+};
+
+// Append the 'script' element to 'head'
+document.head.appendChild(script);
+</script>
+
+<style>
+#map {
+    height: 500px;
+    width: 80%;
+}
+
+#location-list{
+    max-height: 500px;
+    overflow: scroll;
+}
+#addLocation{
+    margin-left: 10px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+</style>

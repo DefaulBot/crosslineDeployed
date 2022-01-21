@@ -1,0 +1,79 @@
+{% extends "manage/manageBase.html" %}
+
+{% include "header.html" %}
+
+{% block manage %}
+  <div id="page-app">
+    <div class="page-head text-center  bg-light p-5">
+      <h1>[[page_title]]</h1>
+      <select class="form-control-sm" v-model="selected" @change="updateLocation" >
+        <option value="default">select a bus run schedule to view</option>
+        {% for busrn in busruns %}
+        <option value="{{busrn.id}}">{{busrn.departure_time}} from {{busrn.departure_location.location_name}} to {{busrn.destination_location.location_name}}</option>
+        {% endfor %}
+      </select>
+    </div>  
+    <p class="text-center" v-if="selected=='default'">No Bus Run Selected, nothing to show</p>
+    <div v-else class="page-body row">
+      <div class="col-sm-2">
+        <legend>Bus Stops</legend>
+        <div class="list-group mb-5" style="max-height:500px; overflow-y: scroll;">
+          <button :title="'View Stats For '+location.location_name" class="list-group-item" v-for="location in locations" :key="location.id">
+            [[location.location_name]]
+          </button>
+        </div>
+      </div>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-sm-5">
+            <legend>Boarding</legend>
+          </div>
+          <div class="col-sm-5">
+            <legend>Deboarding</legend>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- development version, includes helpful console warnings -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+<script>
+  var app = new Vue({
+    delimiters: ['[[', ']]'],
+    el:'#page-app',
+    data:{
+      page_title:'View Bus Stop Stats',
+      selected:"default",
+      locations:[]
+    },
+    methods:{
+      updateLocation(){
+        if(this.selected!='default'){
+          axios.get('/busstopstats/'+this.selected).then(response=>response.data)
+          .then(data=>{
+            if(data.status){
+              data = JSON.parse(data.data)
+              
+              this.locations = data.map(loc=>loc.fields)
+            }
+            else{
+              Message({type:'error', message:data.message})
+            }
+          })
+          .catch(error=>{
+            Message({type:'error', message:error.message})
+          })
+        }
+      }
+    }
+
+  })
+</script>
+<style>
+  button.list-group-item{
+    cursor: pointer;
+  }
+</style>
+{% endblock manage %}

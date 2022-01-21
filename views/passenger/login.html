@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{%load crispy_forms_tags%}
+{%block content%}
+    <div  class="mt-5 content-section bg-light p-5 " style="width:350px; margin: auto; border-radius: 10px; z-index: 999;">
+        <div>
+            <img src="/static/icons/Cross Line/logo_transparent.png" style="width: 100%;" alt="">
+        </div>
+        {% if next %}
+        <form action="/login/?next={{next}}" method="POST">          
+        {% else %}
+        <form action="/login/?next=/" method="POST">          
+        {% endif %}        
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4 text-center">Log In</legend>
+                {{ form | crispy }}
+            </fieldset>
+            
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Login</button>
+            </div>
+        </form>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Don't have an account? <a class="ml-2" href="{% url 'register-passenger' %}">Sign Up Now</a>
+            </small>
+        </div>
+    </div>
+    <div id="backdrop"></div>
+    <style>
+        body{
+            background-color: none;
+            background-image: url(/static/busLogin-bg.jpg);
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center center;
+        }
+        #backdrop{
+            position: fixed;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            background-color: rgba(54, 54, 54, 0.418);
+            z-index: -1;
+        }
+    </style>
+{% endblock content %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron">
+        <h1>You have been Logged out</h1>
+        <hr>
+        <a href="/" class="btn btn-outline-info">Log Back In</a>
+    </div>
+</div>
+<div id="backdrop"></div>
+
+<style>
+    body{
+        background-color: none;
+        background-image: url(/static/busLogin-bg.jpg);
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center center;
+    }
+    #backdrop{
+            position: fixed;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            background-color: rgba(54, 54, 54, 0.418);
+            z-index: -1;
+        }
+</style>
+{% endblock content %}

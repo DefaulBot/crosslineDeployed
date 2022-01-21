@@ -1,0 +1,73 @@
+{% extends "manage/manageBase.html" %}
+{% load crispy_forms_tags %}
+{% block manage %}
+<main class="ml-4">
+    <h1 class="mt-5">Manage Buses</h1>
+    <div class="row p-3">
+        <div class="view col-sm-9">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">name</th>
+                    <th scope="col">type</th>
+                    <th scope="col">plate</th>
+                    <th scope="col">driver</th>
+                    <th scope="col">conductor</th>
+                    <th scope="col">date created</th>
+                    <th scope="col">actions</th>                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for bus in buses %}
+                  <tr>
+                    <td>{{bus.id}}</td>
+                    <td>{{bus.name}}</td>
+                    <td>{{ bus.get_bus_type_display }}</td>
+                    <td>{{ bus.plate_number }}</td>
+                    <td>{{ bus.driver }}</td>
+                    <td>{{bus.conductor}}</td>
+                    <td>{{ bus.date_created }}</td>
+                    <td>
+                        <button title="edit bus" class="btn text-warning" data-toggle="modal" data-target="#editBusModal"><span class="fas fa-edit"></span></button>
+                        <button title="remove bus" class="btn text-danger"><span class="fas fa-trash"></span></button>
+                    </td>
+                </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+        </div>
+        <div class="create p-3 border col-sm-3">            
+            <form method="POST">
+                {% csrf_token %}
+                <legend class="text-center">Add Bus</legend>
+                {{form|crispy}}
+                <div class="field text-center">
+                    <button type="submit" class="btn btn-outline-info">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal -->
+<div class="modal fade" id="editBusModal" tabindex="-1" role="dialog" aria-labelledby="editBusModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editBusModalLabel">Edit Bus</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+</main>  
+{% endblock manage %}

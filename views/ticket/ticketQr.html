@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="{% url 'index' %}">Crossline</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler0" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarToggler0">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'purchase-ticket' %}">Purchase Ticket</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'generate-ticket-QR'%}">Ticket QR</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'ticket-history'%}">Ticket History</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'logout'%}">Logout</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row text-center">
+    <div class="col-md-12">
+      <form class="form" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          {% if seats %}
+            <img src="{% static 'userQRImg/' %}{{username}}-ticket-qr.png" width="200px" height="200px" alt="Your QR Image"> 
+            {% else %}
+              <img src="{% static 'userQRImg/default.png'%}" style="border: 1px solid black;" width="200px" height="200px" alt="Default Image">
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <div class="row justify-content-center">
+            <div class="col-md-4">
+              <table class="table">
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Time</th>
+                  <th>Seats</th>
+                </tr>
+                {% if seats %}
+                <tr style="text-align: center;" id={{ticket_id}}>
+                    <td id="ticket_from_id">{{from}}</td>
+                    <td>{{to}}</td>
+                    <td>{{departure_time}}</td>
+                    <td>{{seats}}</td>
+                    {% else %}
+                    <tr><td colspan="4">Not Ticket Purchased</td>
+                </tr>
+                {%endif%}
+              </table>
+            </div>
+          </div>
+        </div>
+        {% if status %}
+          <div class="form-group">
+            <button id="cancel_ticket"class="btn btn-danger" type="submit">Cancel</button>
+          </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+<div>{{data}}</div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
+<script>
+  setInterval(() => {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+        $.ajax({
+            url: 'is_ticketChanged/',
+            beforeSending: function(request){
+                request.setRequestHeader('Content-Type', 'test/html; charset=utf-8');
+            },
+            type: 'post',
+            data: {
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function(request){    
+                if(request.status == "scanned"){
+                    $('#cancel_ticket').hide();
+                }
+                else if(request.status == "used"){
+                    setTimeout(() => {
+                      url = window.location.href
+                      location.assign(url.replace('/QR/','/'));
+                    }, 6000);
+                }          
+            },
+            error: function(request, textStatus, errorThrown) { 
+            } 
+        });
+    }, 500);
+</script>
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags%}
+{% block content %}
+  <div class="container">
+    <div class="register border p-5 bg-light mb-2" style="width: 500px;" >            
+      <h1 class="text-center">Register</h1>
+      <hr>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        Already have an account? <a href="/login">Login</a>
+    </div>
+  </div>
+  <div id="backdrop"></div>
+
+  <style>
+    body{
+            background-color: none;
+            background-image: url(/static/busLogin-bg.jpg);
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center center;
+        }
+        #backdrop{
+            position: fixed;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            background-color: rgba(54, 54, 54, 0.418);
+            z-index: -1;
+        }
+    .register{
+      margin: auto;
+    }
+  </style>
+{% endblock content %}

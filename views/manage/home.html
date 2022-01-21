@@ -1,0 +1,27 @@
+{% extends "manage/manageBase.html" %}
+
+{% block manage %}
+
+  <div class="welcome text-center " style="">
+    <img src="/static/icons/Cross Line/logo_transparent.png" alt="" style="width: 500px;">
+    <div  style="font-size: 30px; width: 400px; margin: auto; color: #ee0e51; font-weight: bold;">
+     <span class="welcome-message">
+       Welcome {{user.first_name}} {{user.last_name}}
+     </span> 
+    </div>
+  </div>
+  <style>
+
+    #page-content-wrapper{
+      background: #ffffffd8;
+
+    }
+    body{
+        background-color: none;
+        background-image: url(/static/busLogin-bg.jpg);
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center center;
+    }
+</style>
+{% endblock manage %}

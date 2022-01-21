@@ -1,0 +1,95 @@
+{% extends "base_operator.html" %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'index' %}">Crossline</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler0" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarToggler0">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'index' %}">Home</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'view-passenger-tickets'%}">View Tickets</a>
+            </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="{% url 'logout'%}">Logout</a>
+        </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <h1 class="text-center">View Passenger Tickets</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <table class="table text-center">
+                <caption class="text-center" style="caption-side: top;">Unused Tickets</caption>
+                <tr>
+                    <th>Passenger Location</th>
+                    <th>Destination</th>
+                    <th>Seats</th>
+                    <th>Status</th>
+                </tr>
+                {% if all_unscanned_tickets %}
+                    {% for tkt in all_unscanned_tickets %}
+                        <tr>
+                            {% for attr in tkt %}
+                                <td>{{attr}}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td class="text-center" colspan="4">No Unused Tickets</td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+        <div class="col-md-4">
+            <table class="table text-center">
+                <caption class="text-center" style="caption-side: top;">Scanned Tickets</caption>
+                <tr>
+                    <th>Passenger Location</th>
+                    <th>Destination</th>
+                    <th>Seats</th>
+                    <th>Status</th>
+                </tr>
+                {% if all_scanned_tickets %}
+                    {% for tkt in all_scanned_tickets %}
+                        <tr>
+                            {% for attr in tkt %}
+                                <td>{{attr}}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td class="text-center" colspan="4">No Scanned Tickets</td>
+                </tr>
+                {% endif %}
+
+            </table>
+        </div>
+        <div class="col-md-4">
+            <table class="table text-center">
+                <caption class="text-center" style="caption-side: top;">Passanger Ticket Summary</caption>
+                <tr>
+                    <th>Unused Tickets</th>
+                    <th>Scanned Tickets</th>
+                    <th>Total Tickets</th>
+                </tr>
+                <tr>
+                    {% if ticket_summary %}
+                        {% for attr in ticket_summary %}
+                            <td>{{attr}}</td>
+                        {% endfor %}
+                    {% else %}
+                    <td colspan="4">No Ticket Summary</td>
+                    {% endif %}
+                </tr>
+            </table>
+        </div>
+    </div>
+{% endblock content %}

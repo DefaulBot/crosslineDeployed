@@ -1,0 +1,128 @@
+{% extends "manage/manageBase.html" %}
+
+{% block content %}
+  <div class="row">
+      {% if busstops %}
+      <div class="col-sm-12">
+          <h1>Bus Stops for the {{busrun.departure_time}} Bus named {{busrun.bus.name}} </h1>
+          <ul class="list-group">
+            {% for busstop in busstops  %}
+              <li data-id="{{busstop.location.id}}" class="list-group-item">
+                
+                  <button  class="btn btn-outline-success" disabled >{{busstop.location.location_name}}</button>                      
+                {% if busstop.location.id != busrun.destination_location.id %}                      
+                    <span class="fas fa-arrow-right"></span>
+                {% endif %}
+              </li>
+            {% endfor %}
+        </ul>
+      </div>
+       {% else %} 
+      <div class="col-sm-12">
+          <h1>Select Bus Stops for the {{busrun.departure_time}} - {{busrun.bus}}  busrun</h1>
+            <span>select the locations you want to add</span>
+
+            <ul class="list-group">
+                {% for location in locations  %}
+                  <li data-id="{{location.id}}" class="list-group-item">
+                    {% if location.id == busrun.departure_location.id or location.id == busrun.destination_location.id %}
+                      <button  class="btn btn-outline-success" disabled >{{location.location_name}}</button>                      
+                    {% else %}
+                      <button class="busstop-select btn btn-light" >{{location.location_name}}</button>                      
+                    {% endif %}
+                    {% if location.id != busrun.destination_location.id %}                      
+                        <span class="fas fa-arrow-right"></span>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+            </ul>
+            <button class="mt-5 btn btn-success" id="addBusStopToRun">Save Selected Bus Stops</button>
+      </div>
+      <script>
+        var locations = []
+        document.querySelectorAll('.busstop-select').forEach(function(el){
+            el.addEventListener('click', function(e){
+                this.classList.toggle('btn-outline-success')
+                locations = []
+                var selected = document.querySelectorAll('.btn-outline-success')
+                for(let sel of selected)
+                    locations.push(parseInt(sel.parentNode.getAttribute('data-id')))
+            })  
+        })
+        document.getElementById('addBusStopToRun').addEventListener('click', function(e){
+            console.log(locations)
+            axios.post(window.location.pathname, {'locations':locations}, {
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken':'{{csrf_token}}'
+                }
+            })
+            .then(response=>response.data)
+            .then(data=>{
+                if(data.status){
+                    Message({type:'ok', message:data.message})
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 9000);
+                }
+                else
+                    Message({type:'error', message:data.message})
+            })
+            .catch(error=>{
+                Message({type:'error', message:error.message})
+            })
+        })
+    </script>
+      {% endif %}
+
+  </div>
+  <div class="row">
+      <div class="col-sm-12">
+        <h2 class="text-center">Bus Schedule for {{busrun.departure_time}} - going from {{busrun.departure_location}} to {{busrun.destination_location}}</h2>
+        <div class="tag-data text-center m-3">
+
+            <span class="btn-outline-info border rounded p-2">bus driver - {{busrun.bus.driver.first_name}} {{busrun.bus.driver.last_name}}</span>
+            <span class="btn-outline-info border rounded p-2">conductor - {{busrun.bus.conductor.first_name}} {{ busrun.bus.conductor.last_name }}</span>
+            <span class="btn-outline-info border rounded p-2">bus license plate - {{busrun.bus.plate_number}}</span>
+            <span class="btn-outline-info border rounded p-2">capacity - {{busrun.bus.capacity}}</span>
+            
+        </div>
+        <div class="viewSchedule mt-3">
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Bus Run</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Bus Fair</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bussch in busschedule %}
+                      <tr>
+                          <td>{{forloop.counter}}</td>
+                          <td>{{busrun.departure_location}} to {{busrun.destination_location}}</td>
+                          <td>{{bussch.from_location}}</td>
+                          <td>{{bussch.to_location}}</td>
+                          <td>{{bussch.bus_fair}}</td>
+                      </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        </div>
+      </div>
+  </div>
+  <style>
+      .row ul.list-group{
+          display: block;
+      }
+      .row ul.list-group .list-group-item {
+        margin: 10px;
+        display: inline-block;
+        padding: 0;
+      }
+  </style>
+{% endblock content %}

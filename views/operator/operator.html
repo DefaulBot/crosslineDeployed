@@ -1,0 +1,81 @@
+{% extends "manage/manageBase.html" %}
+{% load crispy_forms_tags%}
+{% block manage %}
+
+<main class="ml-4">    
+    <h1 class="mt-5">Manage Bus Operators</h1>
+    <div class="row mt-5 p-3">
+
+        <div class="tableView col col-sm-9">
+            <table class="table"> 
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">LastLogin</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Is Active?</th>                    
+                    <th scope="col">Action</th>                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for operator in operators %}
+                    <tr operator-id="{{operator.id}}">
+                        <td>{{forloop.counter}}</td>
+                        <td>{{operator.first_name}}</td>
+                        <td>{{operator.last_name}}</td>
+                        <td>{{operator.username}}</td>                        
+                        <td>{{operator.email}}</td>
+                        <td>{{operator.last_login}}</td>
+                        <td>{{operator.date_joined}}</td>
+                        {% if operator.is_active %}
+                        <td><span class="fas fa-check text-success"></span></td>
+                        {% else %}
+                        <td><span class="fas fa-times text-success"></span></td>
+                        {% endif %}
+                        <td>
+                            <button title="Edit operator" class="btn text-warning"><span class="fas fa-edit"></span></button>
+                            <button data-id="{{operator.id}}" title="Remove operator" class="remove btn text-danger"><span class="fas fa-trash"></span></button>
+                        </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </table>
+        </div>
+
+        <div class="createView border p-5 col col-sm-3" >            
+            <h2>Add a Bus Operator</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+      var removeButtons = document.querySelectorAll('.remove')
+      removeButtons.forEach(function(el){
+        el.addEventListener('click', function(e){
+          var $this = this
+          axios.delete(`/operators/${$(this).attr('data-id')}/delete`,{headers:{'X-CSRFToken':'{{csrf_token}}'}}).then(response=>response.data)
+            .then(data=>{
+              if(data.status){
+                Message({type:"ok", message:data.message})
+                $this.parentNode.parentNode.remove()
+              } 
+              else Message({type:"error", message:data.message})
+            })
+            .catch(error=>{
+              Message({type:"error", message: error.message})
+            })
+        })
+      })
+
+    </script>
+</main>
+{% endblock manage %}

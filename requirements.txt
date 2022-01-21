@@ -1,0 +1,9 @@
+asgiref==3.3.1
+Django==3.1.7
+django-crispy-forms==1.11.2
+mysqlclient==2.0.3
+python-dotenv==0.17.0
+pytz==2021.1
+sqlparse==0.4.1
+qrcode[pil]
+requests

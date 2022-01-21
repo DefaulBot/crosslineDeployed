@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="{% url 'index' %}">Crossline</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler0" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarToggler0">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'purchase-ticket' %}">Purchase Ticket</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'generate-ticket-QR'%}">Ticket QR</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'ticket-history'%}">Ticket History</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'logout'%}">Logout</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+    <div class="container">
+        <div class="row">
+            <h1 class="text-center">Ticket History</h1>
+            <div class="col-md-12">
+                <table class="table">
+                    <caption class="text-center" style="caption-side: top;"><b>Active Ticket</b></caption>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Seats</th>
+                        <th>Price</th>
+                        <th>Purchase Date</th>
+                    </tr>
+                    {% if user_current_ticket %}
+                        {% for ticket in user_current_ticket%}
+                            <td>{{ticket.0}}</td>
+                            <td>{{ticket.1}}</td>
+                            <td>{{ticket.2}}</td>
+                            <td>{{ticket.3}}</td>
+                            <td>{{ticket.4}}</td>
+                        {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td class="text-center" colspan="5"><b>No Active Tickets</b></td>
+                            </tr>
+                    {% endif%}
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table">
+                    <caption class="text-center" style="caption-side: top;"><b>Used Tickets</b></caption>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Seats</th>
+                        <th>Price</th>
+                        <th>Purchase Date</th>
+                    </tr>
+                    {% if all_used_user_tickets %}
+                        {% for ticket in all_used_user_tickets%}
+                        <tr>
+                            <td>{{ticket.0}}</td>
+                            <td>{{ticket.1}}</td>
+                            <td>{{ticket.2}}</td>
+                            <td>{{ticket.3}}</td>
+                            <td>{{ticket.4}}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="text-center" style="caption-side: top;" colspan="5"><b>No Used Tickets</b></td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table">
+                    <caption class="text-center" style="caption-side: top;"><b>Cancelled Tickets</b></caption>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Seats</th>
+                        <th>Price</th>
+                        <th>Purchase Date</th>
+                    </tr>
+                    {% if all_cancelled_user_tickets %}
+                        {% for ticket in all_cancelled_user_tickets%}
+                        <tr>
+                            <td>{{ticket.0}}</td>
+                            <td>{{ticket.1}}</td>
+                            <td>{{ticket.2}}</td>
+                            <td>{{ticket.3}}</td>
+                            <td>{{ticket.4}}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="text-center" colspan="5"> <b>No Cancelled Tickets</b></td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

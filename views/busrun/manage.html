@@ -1,0 +1,72 @@
+{% extends "manage/manageBase.html" %}
+{% load crispy_forms_tags %}
+{% block manage %}
+  <div class="row">
+    <div class="col-sm-12 m-3">
+      <h1 class="text-center">Manage Bus Schedule</h1>
+      <div class="controls">
+        <button id="addBusRunTrigger" type="button" class="btn btn-primary" data-toggle="modal" data-target="#busrunAdd">
+          <span class="fas fa-plus"></span> Add Bus Run
+        </button>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">departure time</th>
+            <th scope="col">type</th>
+            <th scope="col">departure</th>
+            <th scope="col">destination</th>
+            <th scope="col">bus</th>
+            <th scope="col">conductor</th>
+            <th scope="col">driver</th>
+            <th scope="col">actions</th>                    
+          </tr>
+        </thead>
+        <tbody>
+          {% for busrun in busruns %}
+          <tr>
+            <td>{{busrun.id}}</td>
+            <td>{{ busrun.departure_time }}</td>
+            <td>{{ busrun.run_type }}</td>
+            <td>{{ busrun.departure_location }}</td>
+            <td>{{ busrun.destination_location }}</td>
+            <td>{{ busrun.bus.name}}</td>
+            <td>{{ busrun.bus.conductor}}</td>
+            <td>{{ busrun.bus.driver }}</td>
+            <td>
+                <a title="edit busrun" href="/busschedule/manage/{{busrun.id}}" class="btn text-warning"><span class="fas fa-edit"></span></a>
+                <button title="remove busrun" class="btn text-danger"><span class="fas fa-trash"></span></button>
+            </td>
+        </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    </div>
+  {% include "busrun/location_manage.html" %}
+
+  <!-- Modal -->
+<div class="modal fade" id="busrunAdd" tabindex="-1" role="dialog" aria-labelledby="busrunAddLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="busrunAddLabel">Add Bus Run</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" id="addBusRun">
+          {% csrf_token %}
+          {{form | crispy}}
+          <div class="field">
+            <button type="submit" class="btn btn-success">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock manage %}
